@@ -1,0 +1,283 @@
+
+Error Trace Log - 11/17/2026
+ Fedora Linux 45
+  AMD WX 9100 PRO / Lenovo P910-Motherboard / Beats Studio Pro --- No Audio Output After Upgrade From 7.3.3 To 7.3.4
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------#
+ 
+Summary: Listening to youtube, Working in Terminal. Updated System After Finishing Work (youtube still playing in background fine). Soft Reset. Attemped To Watch Video, Noticed I Had No Audio.
+  
+#----------------------------------------------------------------------------------------------------------------------------------------------------#
+ 
+Attempt: Hard Reset PC. Unplug Power. Wait 30sec.
+ 
+Result: No Audio.
+ 
+#----------------------------------------------------------------------------------------------------------------------------------------------------#
+Attempt: Does Fedora See The AMD WX 9100 (HDMI)
+
+        PipeWire 'pipewire-0' [1.6.11, anon@fedora, cookie:2627582618]
+        └─ Clients:
+                33. xdg-desktop-portal                  [1.6.11, anon@fedora, pid:2815]
+                34. WirePlumber                         [1.6.11, anon@fedora, pid:2854]
+                39. xdg-desktop-portal-wlr              [1.6.11, anon@fedora, pid:2863]
+                43. pipewire                            [1.6.11, anon@fedora, pid:2880]
+                44. waybar                              [1.6.11, anon@fedora, pid:2748]
+                51. WirePlumber [client]                [1.6.11, anon@fedora, pid:2854]
+                57. Blueman                             [1.6.11, anon@syn-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx, pid:2911]
+                61. wpctl                               [1.6.11, anon@syn-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx, pid:5300]
+
+        Audio
+        ├─ Devices:
+        │      52. Vega 10 HDMI Audio [Radeon Vega 56/64] [alsa]
+        │      53. Built-in Audio                      [alsa]
+        │
+        ├─ Sinks:
+        │      70. Vega 10 HDMI Audio [Radeon Vega 56/64] Digital Stereo (HDMI) [vol: 1.00]
+        │
+        ├─ Sources:
+        │
+        ├─ Filters:
+        │
+        └─ Streams:
+
+        Video
+        ├─ Devices:
+        │
+        ├─ Sinks:
+        │
+        ├─ Sources:
+        │
+        ├─ Filters:
+        │
+        └─ Streams:
+
+        Settings
+        └─ Default Configured Devices:
+                0. Audio/Sink    alsa_output.pci-0000_03_00.1.hdmi-stereo-extra4
+
+Result: Yes Fedora Does See the HDMI Output, Configuration Has Not Changed. No Default Audio/Sink.
+         
+#----------------------------------------------------------------------------------------------------------------------------------------------------#
+
+Attempt: Does Pavucontrol See HDMI/ Is Audio Set:
+
+       wpctl set-default 70
+       wpctl get-volume 70
+       wpctl set-mute 70 0
+
+Result: pavucontrol still didn't see HDMI as output. all channels "unavalible".
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------#
+
+Attempt: Hard Reset PC And TV. Unplug Power. Wait 30sec.
+ 
+Result: No Audio.
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------#
+
+Attempt: See What Info I Could Gain On Hardware:
+
+        **** List of PLAYBACK Hardware Devices ****
+        card 0: PCH [HDA Intel PCH], device 0: ALC662 rev3 Analog [ALC662 rev3 Analog]
+        Subdevices: 1/1
+        Subdevice #0: subdevice #0
+        card 1: HDMI [HDA ATI HDMI], device 3: HDMI 0 [HDMI 0]
+        Subdevices: 1/1
+        Subdevice #0: subdevice #0
+        card 1: HDMI [HDA ATI HDMI], device 7: HDMI 1 [HDMI 1]
+        Subdevices: 1/1
+        Subdevice #0: subdevice #0
+        card 1: HDMI [HDA ATI HDMI], device 8: HDMI 2 [HDMI 2]
+        Subdevices: 1/1
+        Subdevice #0: subdevice #0
+        card 1: HDMI [HDA ATI HDMI], device 9: HDMI 3 [HDMI 3]
+        Subdevices: 1/1
+        Subdevice #0: subdevice #0
+        card 1: HDMI [HDA ATI HDMI], device 10: HDMI 4 [HDMI 4]
+        Subdevices: 1/1
+        Subdevice #0: subdevice #0
+        card 1: HDMI [HDA ATI HDMI], device 11: HDMI 5 [HDMI 5]
+        Subdevices: 1/1
+        Subdevice #0: subdevice #0
+
+Result: ALSA Detects Both Motherboard and AMD Audio interfaces.
+    
+#----------------------------------------------------------------------------------------------------------------------------------------------------#
+
+Attempt: What "*.service" are running ( PipeWire, PipeWire-Pulse, and WirePlumber )
+  
+        ● pipewire.service - PipeWire Multimedia Service
+        Loaded: loaded (/usr/lib/systemd/user/pipewire.service; disabled; preset: disabled)
+        Drop-In: /usr/lib/systemd/user/service.d
+                └─10-timeout-abort.conf
+        Active: active (running) since Tue 2026-11-17 04:45:08 EST; 7min ago
+        Invocation: 7c616b49ca014341959d37060971d634
+        TriggeredBy: ● pipewire.socket
+        Main PID: 2853 (pipewire)
+        Tasks: 3 (limit: 309270)
+        Memory: 5.6M (peak: 17.6M)
+                CPU: 307ms
+        CGroup: /user.slice/user-1000.slice/user@1000.service/session.slice/pipewire.service
+                └─2853 /usr/bin/pipewire
+
+        Nov 17 04:45:08 fedora systemd[2438]: Started pipewire.service - PipeWire Multimedia Service.
+
+        ● pipewire-pulse.service - PipeWire PulseAudio
+        Loaded: loaded (/usr/lib/systemd/user/pipewire-pulse.service; disabled; preset: disabled)
+        Drop-In: /usr/lib/systemd/user/service.d
+                └─10-timeout-abort.conf
+        Active: active (running) since Tue 2026-11-17 04:45:09 EST; 7min ago
+        Invocation: 8bd1feb21c234f0d9549d19714f3ab8e
+        TriggeredBy: ● pipewire-pulse.socket
+        Main PID: 2880 (pipewire-pulse)
+        Tasks: 3 (limit: 309270)
+        Memory: 3.4M (peak: 6.4M)
+                CPU: 170ms
+        CGroup: /user.slice/user-1000.slice/user@1000.service/session.slice/pipewire-pulse.service
+                └─2880 /usr/bin/pipewire-pulse
+
+        Nov 17 04:45:09 fedora systemd[2438]: Started pipewire-pulse.service - PipeWire PulseAudio.
+
+        ● wireplumber.service - Multimedia Service Session Manager
+                Loaded: loaded (/usr/lib/systemd/user/wireplumber.service; enabled; preset: enabled)
+                Drop-In: /usr/lib/systemd/user/service.d
+                        └─10-timeout-abort.conf
+                Active: active (running) since Tue 2026-11-17 04:45:08 EST; 7min ago
+                Invocation: 59a2c4fef5f34f51a49d23edbb188f18
+                Main PID: 2854 (wireplumber)
+                Tasks: 12 (limit: 309270)
+                Memory: 17.9M (peak: 20.7M)
+                CPU: 1.422s
+                CGroup: /user.slice/user-1000.slice/user@1000.service/session.slice/wireplumber.service
+                        └─2854 /usr/bin/wireplumber
+
+        Nov 17 04:45:08 fedora systemd[2438]: Started wireplumber.service - Multimedia Service Session Manager.
+
+Result: All Services Running as Intended 
+   
+#----------------------------------------------------------------------------------------------------------------------------------------------------#
+
+Attempt: AUX Test
+
+        speaker-test -D plughw:0,0 -c 2 -t wav
+
+Result: Still No Audio From AUX
+#----------------------------------------------------------------------------------------------------------------------------------------------------#
+   
+Attempt: HDMI Test
+
+        speaker-test -D plughw:1,3 -c 2 -t wav
+   
+Result: Still No Audio From HDMI
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------#
+
+Attempt: What Does Fedora See *again*
+
+        PipeWire 'pipewire-0' [1.6.11, anon@fedora, cookie:2627582618]
+        └─ Clients:
+                33. xdg-desktop-portal                  [1.6.11, anon@fedora, pid:2815]
+                34. WirePlumber                         [1.6.11, anon@fedora, pid:2854]
+                39. xdg-desktop-portal-wlr              [1.6.11, anon@fedora, pid:2863]
+                43. pipewire                            [1.6.11, anon@fedora, pid:2880]
+                44. waybar                              [1.6.11, anon@fedora, pid:2748]
+                51. WirePlumber [client]                [1.6.11, anon@fedora, pid:2854]
+                57. Blueman                             [1.6.11, anon@syn-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, pid:2911]
+                61. LibreWolf                           [1.6.11, anon@syn-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, pid:3340]
+                63. PulseAudio Volume Control           [1.6.11, anon@syn-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, pid:8090]
+                76. wpctl                               [1.6.11, anon@syn-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, pid:10259]
+                82. LibreWolf                           [1.6.11, anon@syn-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, pid:3340]
+                84. libcanberra                         [1.6.11, anon@syn-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, pid:8090]
+
+        Audio
+        ├─ Devices:
+        │      52. Vega 10 HDMI Audio [Radeon Vega 56/64] [alsa]
+        │      53. Built-in Audio                      [alsa]
+        │
+        ├─ Sinks:
+        │  *   66. Built-in Audio Analog Stereo        [vol: 1.00]
+        │      86. Vega 10 HDMI Audio [Radeon Vega 56/64] Digital Stereo (HDMI) [vol: 1.00]
+        │
+        ├─ Sources:
+        │
+        ├─ Filters:
+        │
+        └─ Streams:
+                47. PulseAudio Volume Control
+                65. monitor_FL
+                69. input_FR        < LibreWolf:output_FR	[active]
+                78. input_FL        < LibreWolf:output_FL	[active]
+                80. monitor_FR
+                77. LibreWolf
+                45. output_FL       > HDMI 0:playback_FL	[active]
+                72. output_FR       > PulseAudio Volume Control:input_FR	[active]
+
+        Video
+        ├─ Devices:
+        │
+        ├─ Sinks:
+        │
+        ├─ Sources:
+        │
+        ├─ Filters:
+        │
+        └─ Streams:
+
+        Settings
+        └─ Default Configured Devices:
+                0. Audio/Sink    alsa_output.pci-0000_00_1b.0.analog-stereo.2
+
+
+Result: Left Channel Routed To HDMI 0:playback_FL. Built-in speakers Are Still Default Output, HDMI switch didn’t stick. No Audio from HDMI.
+
+#------------------------------------------------------------------------------------------------------------------------------------------------#
+
+Attempt: Hard Reset Both PC And TV.
+
+Result: No Change.
+
+#------------------------------------------------------------------------------------------------------------------------------------------------#
+
+Attempt: What Does Graphics Driver See
+
+        echo "=== $f ==="
+        grep -E 'monitor_present|eld_valid|monitor_name|connection_type' "$f"
+
+        === /proc/asound/card1/eld#0.0 ===
+        monitor_present		0
+        eld_valid		0
+        === /proc/asound/card1/eld#0.1 ===
+        monitor_present		0
+        eld_valid		0
+        === /proc/asound/card1/eld#0.2 ===
+        monitor_present		0
+        eld_valid		0
+        === /proc/asound/card1/eld#0.3 ===
+        monitor_present		0
+        eld_valid		0
+        === /proc/asound/card1/eld#0.4 ===
+        monitor_present		0
+        eld_valid		0
+        === /proc/asound/card1/eld#0.5 ===
+        monitor_present		0
+        eld_valid		0
+
+Result: No Handshake. Hard Reset Both PC and TV For 3rd Time.
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------#
+
+Attempt: Reset And Decided To Try Older Kernel (7.3.3)
+
+Result: Audio Works Fine.
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------#
+
+Fix: Remove Kernel-Core-7.3.4
+
+        sudo dnf history info 54
+        sudo dnf remove --noautoremove kernel-core-7.3.4-300.fc45
+        sudo reboot -h now
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------#
+######END######
