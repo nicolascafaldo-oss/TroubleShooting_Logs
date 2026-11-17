@@ -5,7 +5,8 @@ Error Trace Log - 11/17/2026
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------#
  
-Summary: Listening to youtube, Working in Terminal. Updated System After Finishing Work (youtube still playing in background fine). Soft Reset. Attemped To Watch Video, Noticed I Had No Audio.
+Summary: Listening to youtube, Working in Terminal. Updated System After Finishing Work (youtube still playing in background fine). 
+         Soft Reset. Attemped To Watch Video, Noticed I Had No Audio.
   
 #----------------------------------------------------------------------------------------------------------------------------------------------------#
  
