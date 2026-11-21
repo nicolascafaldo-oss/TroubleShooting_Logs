@@ -1,0 +1,39 @@
+Title: Vega 10 amdgpu initialization failure and HDMI audio loss after kernel update; rebuilding initramfs fixed it
+
+After updating from kernel 7.3.3 to 7.3.4 on Fedora 45, audio from my AMD Vega system’s HDMI/DisplayPort output stopped working. I saw the same problem on two Lenovo systems.
+
+The Radeon PRO WX 9100’s audio function was still detected, and snd_hda_intel was bound to it:
+text
+
+03:00.0 VGA compatible controller [0300]: Advanced Micro Devices, Inc. [AMD/ATI] Vega 10 XT [Radeon PRO WX 9100] [1002:6861]
+        Kernel modules: amdgpu
+03:00.1 Audio device [0403]: Advanced Micro Devices, Inc. [AMD/ATI] Vega 10 HDMI Audio [Radeon Vega 56/64] [1002:aaf8]
+        Kernel driver in use: snd_hda_intel
+
+wpctl status showed an AMD HDMI audio sink:
+text
+
+Settings
+ └─ Default Configured Devices:
+         0. Audio/Sink    alsa_output.pci-0000_03_00.1.hdmi-stereo-extra5
+
+However, the kernel log showed that the main amdgpu driver failed during GPU initialization:
+text
+
+amdgpu 0000:03:00.0: [drm] Optional firmware "amdgpu/vega10_ip_discovery.bin" was not found
+amdgpu 0000:03:00.0: [drm] Optional firmware "amdgpu/vega10_gpu_info.bin" was not found
+amdgpu 0000:03:00.0: Failed to get gpu_info firmware "vega10_gpu_info.bin"
+amdgpu 0000:03:00.0: Fatal error during GPU init
+amdgpu 0000:03:00.0: finishing device.
+amdgpu: no gpu node! Cannot create KFD process
+
+I installed the Fedora amd-gpu-firmware package, but the error persisted. The package version was amd-gpu-firmware-20261019-1.fc45.noarch. It contained /usr/lib/firmware/amdgpu/vega10_gpu_info.bin.xz; the file passed xz -t, and the running kernel had CONFIG_FW_LOADER_COMPRESS_XZ=y.
+
+Fix: I rebuilt the initramfs for the running kernel:
+bash
+
+sudo dracut --force /boot/initramfs-$(uname -r).img $(uname -r)
+
+After rebooting, the GPU initialized and HDMI/DisplayPort audio worked again.
+
+The running kernel was 7.3.4-300.fc45.x86_64. I don’t know why the existing initramfs caused the firmware-load failure, but rebuilding it fixed the issue on my systems.
